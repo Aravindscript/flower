@@ -3,11 +3,46 @@ import { gsap } from "gsap";
 import "./style.css";
 
 const flowers = [
-  { id: "left", x: 205, y: 425, color: "#45efff", stem: "#9b75ff", size: 0.95 },
-  { id: "leftMiddle", x: 330, y: 345, color: "#55f4ff", stem: "#bd78ff", size: 1.05 },
-  { id: "center", x: 500, y: 270, color: "#65f6ff", stem: "#8e72ff", size: 1.12 },
-  { id: "rightMiddle", x: 670, y: 345, color: "#51efff", stem: "#ff648e", size: 1.05 },
-  { id: "right", x: 795, y: 425, color: "#49efff", stem: "#ff547e", size: 0.95 },
+  {
+    id: "left",
+    x: 205,
+    y: 425,
+    color: "#45efff",
+    stem: "#9b75ff",
+    size: 0.95,
+  },
+  {
+    id: "leftMiddle",
+    x: 330,
+    y: 345,
+    color: "#55f4ff",
+    stem: "#bd78ff",
+    size: 1.05,
+  },
+  {
+    id: "center",
+    x: 500,
+    y: 270,
+    color: "#65f6ff",
+    stem: "#8e72ff",
+    size: 1.12,
+  },
+  {
+    id: "rightMiddle",
+    x: 670,
+    y: 345,
+    color: "#51efff",
+    stem: "#ff648e",
+    size: 1.05,
+  },
+  {
+    id: "right",
+    x: 795,
+    y: 425,
+    color: "#49efff",
+    stem: "#ff547e",
+    size: 0.95,
+  },
 ];
 
 const petals = Array.from({ length: 8 }, (_, i) => i * 45);
@@ -42,6 +77,7 @@ function Flower({ flower }) {
             opacity="0.92"
             filter="url(#petalGlow)"
           />
+
           <ellipse
             cx="0"
             cy="-27"
@@ -68,6 +104,7 @@ function Flower({ flower }) {
             strokeWidth="1"
             filter="url(#petalGlow)"
           />
+
           <path
             d="M 0 -3 L 0 -24"
             stroke="#ffffff"
@@ -93,15 +130,15 @@ export default function App() {
       const halos = gsap.utils.toArray(".flower-halo");
       const grass = gsap.utils.toArray(".grass-blade");
 
-      // Initial state
+      // Initial stem drawing state
       gsap.set(stemPaths, {
-        strokeDasharray: 800,
-        strokeDashoffset: 800,
+        strokeDasharray: 1000,
+        strokeDashoffset: 1000,
       });
 
       gsap.set(glowPaths, {
-        strokeDasharray: 800,
-        strokeDashoffset: 800,
+        strokeDasharray: 1000,
+        strokeDashoffset: 1000,
         opacity: 0,
       });
 
@@ -118,7 +155,7 @@ export default function App() {
         transformOrigin: "center center",
       });
 
-      // 1. Grow all five stems from the same base
+      // 1. Grow the five stems
       timeline.to(stemPaths, {
         strokeDashoffset: 0,
         duration: 1.8,
@@ -126,7 +163,7 @@ export default function App() {
         ease: "power2.out",
       });
 
-      // 2. Bloom flowers from left to right
+      // 2. Bloom the flowers
       timeline.to(
         flowerGroups,
         {
@@ -138,7 +175,7 @@ export default function App() {
         "-=0.35"
       );
 
-      // 3. Soft glow after each flower blooms
+      // 3. Flower glow
       timeline.to(
         halos,
         {
@@ -150,7 +187,7 @@ export default function App() {
         "<"
       );
 
-      // 4. Tiny decorative buds appear
+      // 4. Decorative buds appear
       timeline.to(
         ".small-buds",
         {
@@ -163,8 +200,7 @@ export default function App() {
         "-=0.1"
       );
 
-      // 5. Final traveling glow, left to right
-      // Each stem lights up in sequence.
+      // 5. Travelling light through the stems
       timeline.to(glowPaths, {
         opacity: 1,
         strokeDashoffset: 0,
@@ -173,7 +209,6 @@ export default function App() {
         ease: "power1.inOut",
       });
 
-      // The glow briefly brightens the flowers as it reaches them.
       flowers.forEach((flower, index) => {
         timeline.to(
           `#flower-${flower.id}`,
@@ -188,7 +223,7 @@ export default function App() {
         );
       });
 
-      // 6. Keep a soft glow after the traveling light
+      // 6. Keep a soft stem glow
       timeline.to(
         glowPaths,
         {
@@ -209,8 +244,7 @@ export default function App() {
         "<"
       );
 
-      // 7. Gentle breeze: subtle swaying, not strong shaking
-      // Animate the upper plants gently after the reveal.
+      // 7. Gentle flower and grass movement
       timeline.add(() => {
         flowerGroups.forEach((flower, index) => {
           gsap.to(flower, {
@@ -249,16 +283,19 @@ export default function App() {
 
   return (
     <main className="flower-scene" ref={sceneRef}>
+      {/* Moving star background */}
       <div className="stars-layer">
-        {Array.from({ length: 90 }, (_, i) => (
+        {Array.from({ length: 400 }, (_, i) => (
           <span
             key={i}
             className="star"
             style={{
               left: `${(i * 37 + 11) % 100}%`,
-              top: `${(i * 61 + 7) % 100}%`,
-              animationDelay: `${(i % 9) * 0.27}s`,
-              animationDuration: `${1.7 + (i % 5) * 0.55}s`,
+              top: `${(i * 61 + 7) % 100}vh`,
+              animationDelay: `${-(i % 14) * 0.8}s, ${-(i % 14) * 1.1}s`,
+              animationDuration: `${2 + (i % 5) * 0.45}s, ${
+                11 + (i % 7) * 1.2
+              }s`,
               width: `${i % 7 === 0 ? 3 : 1.5}px`,
               height: `${i % 7 === 0 ? 3 : 1.5}px`,
             }}
@@ -273,7 +310,13 @@ export default function App() {
         aria-label="Five glowing flowers growing and gently swaying"
       >
         <defs>
-          <filter id="petalGlow" x="-100%" y="-100%" width="300%" height="300%">
+          <filter
+            id="petalGlow"
+            x="-100%"
+            y="-100%"
+            width="300%"
+            height="300%"
+          >
             <feGaussianBlur stdDeviation="4" result="blur" />
             <feMerge>
               <feMergeNode in="blur" />
@@ -281,12 +324,25 @@ export default function App() {
             </feMerge>
           </filter>
 
-          <filter id="largeGlow" x="-150%" y="-150%" width="400%" height="400%">
+          <filter
+            id="largeGlow"
+            x="-150%"
+            y="-150%"
+            width="400%"
+            height="400%"
+          >
             <feGaussianBlur stdDeviation="15" />
           </filter>
 
-          <filter id="flowerStrongGlow" x="-150%" y="-150%" width="400%" height="400%">
+          <filter
+            id="flowerStrongGlow"
+            x="-150%"
+            y="-150%"
+            width="400%"
+            height="400%"
+          >
             <feGaussianBlur stdDeviation="7" result="blur" />
+
             <feColorMatrix
               in="blur"
               type="matrix"
@@ -296,6 +352,7 @@ export default function App() {
                       0 0 0 1.5 0"
               result="strongBlur"
             />
+
             <feMerge>
               <feMergeNode in="strongBlur" />
               <feMergeNode in="SourceGraphic" />
@@ -312,15 +369,26 @@ export default function App() {
               y2="1"
             >
               <stop offset="0%" stopColor="#ffffff" stopOpacity="0.95" />
-              <stop offset="35%" stopColor={flower.color} stopOpacity="0.9" />
+              <stop
+                offset="35%"
+                stopColor={flower.color}
+                stopOpacity="0.9"
+              />
               <stop offset="100%" stopColor="#6d7dff" stopOpacity="0.2" />
             </linearGradient>
           ))}
 
-          <linearGradient id="grassGradient" x1="0" y1="1" x2="0.7" y2="0">
-            <stop offset="0%" stopColor="#176e42" />
-            <stop offset="55%" stopColor="#43e76c" />
-            <stop offset="100%" stopColor="#a4ff7b" />
+          <linearGradient
+            id="grassGradient"
+            x1="0"
+            y1="1"
+            x2="0.7"
+            y2="0"
+          >
+            <stop offset="0%" stopColor="#07552c" />
+            <stop offset="45%" stopColor="#20c958" />
+            <stop offset="75%" stopColor="#43f276" />
+            <stop offset="100%" stopColor="#bdff96" />
           </linearGradient>
         </defs>
 
@@ -335,11 +403,11 @@ export default function App() {
           filter="url(#largeGlow)"
         />
 
-        {/* Green grass around the base */}
-        {Array.from({ length: 15 }, (_, i) => {
-          const x = 500 + (i - 7) * 23;
-          const endX = x + (i - 7) * 12;
-          const endY = 500 + (Math.abs(i - 7) % 4) * 35;
+        {/* Denser, longer green grass */}
+        {Array.from({ length: 29 }, (_, i) => {
+          const x = 500 + (i - 14) * 12;
+          const endX = x + (i - 14) * 14;
+          const endY = 470 + (Math.abs(i - 14) % 5) * 30;
 
           return (
             <path
@@ -348,51 +416,52 @@ export default function App() {
               d={`M 500 730 Q ${x} 640 ${endX} ${endY}`}
               fill="none"
               stroke="url(#grassGradient)"
-              strokeWidth={i % 3 === 0 ? 5 : 3}
+              strokeWidth={i % 3 === 0 ? 6 : 4}
               strokeLinecap="round"
-              opacity={0.55 + (i % 4) * 0.1}
+              opacity={0.72 + (i % 4) * 0.07}
             />
           );
         })}
 
-        {/* All five stems share one bottom starting point */}
+        {/* Five thicker stems from one common base */}
         {flowers.map((flower) => {
           const controlX = (500 + flower.x) / 2;
           const controlY = (720 + flower.y) / 2;
 
-          const stemD = `M 500 720 Q ${controlX} ${controlY + 30} ${flower.x} ${flower.y + 28}`;
+          const stemD = `M 500 720 Q ${controlX} ${
+            controlY + 30
+          } ${flower.x} ${flower.y + 28}`;
 
           return (
             <g key={flower.id} className={`plant plant-${flower.id}`}>
-              {/* Original stem */}
+              {/* Main coloured stem */}
               <path
                 className="stem-main"
                 d={stemD}
                 fill="none"
                 stroke={flower.stem}
-                strokeWidth={flower.id === "center" ? 4.5 : 5}
+                strokeWidth={14}
                 strokeLinecap="round"
               />
 
-              {/* Animated traveling light overlay */}
+              {/* Travelling cyan glow */}
               <path
                 className="stem-glow"
                 d={stemD}
                 fill="none"
                 stroke="#b9ffff"
-                strokeWidth="7"
+                strokeWidth="12"
                 strokeLinecap="round"
                 filter="url(#petalGlow)"
                 opacity="0"
               />
 
-              {/* Flower petals */}
               <Flower flower={flower} />
             </g>
           );
         })}
 
-        {/* Decorative small buds */}
+        {/* More decorative buds around the base */}
         <g className="small-buds">
           {Array.from({ length: 12 }, (_, i) => {
             const side = i < 6 ? -1 : 1;
@@ -401,7 +470,9 @@ export default function App() {
             return (
               <g
                 key={i}
-                transform={`translate(${500 + side * (70 + n * 19)} ${685 - n * 13}) rotate(${side * (30 + n * 7)})`}
+                transform={`translate(${
+                  500 + side * (70 + n * 19)
+                } ${685 - n * 13}) rotate(${side * (30 + n * 7)})`}
               >
                 <ellipse
                   cx="0"
@@ -414,6 +485,7 @@ export default function App() {
                   strokeWidth="2"
                   filter="url(#petalGlow)"
                 />
+
                 <ellipse
                   cx="0"
                   cy="0"
